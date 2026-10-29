@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>OrgRise — Puzzle de Diseño Organizacional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-viewport">
+    <main class="phone-canvas" aria-label="Tablero de OrgRise">
+      <!-- Barra superior de navegación en partida -->
+      <header class="top-nav-bar">
+        <div class="streak-pill" id="textRacha" title="Racha diaria de organigramas resueltos">🔥 0</div>
+        <div class="top-actions-group">
+          <button type="button" class="top-btn top-btn-menu" id="botonAbrirMenu">☰ Menú / Niveles</button>
+          <button type="button" class="top-btn top-btn-reset" id="botonReiniciarNivel">↻ Reiniciar</button>
+          <button type="button" class="top-btn top-btn-sound" id="btnToggleSound" aria-label="Silenciar sonido" title="Sonido">🔊</button>
+        </div>
+      </header>
+
+      <!-- Cabecera académica del nivel activo -->
+      <section class="academic-header-panel" aria-live="polite">
+        <h1 class="header-title" id="headerTitle">Nivel 1: Cadena de Mando y Tramo de Control</h1>
+        <p class="header-subtitle" id="headerSubtitle">Departamentalización Funcional | Conectá cada rol respetando su área y cupo</p>
+      </section>
+
+      <!-- Área de juego (SpawnArea) -->
+      <section class="spawn-area" id="spawnArea" aria-label="Área del organigrama">
+        <div class="tier-guides" id="tierGuides"></div>
+        <svg class="connections-svg" id="connectionsSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="nodes-layer" id="nodesLayer"></div>
+        <div class="board-hint-pill">Arrastrá o tocá dos roles para conectar • Doble toque o clic derecho para desconectar</div>
+      </section>
+
+      <!-- Barra inferior de Comodín de Reestructuración -->
+      <div class="wildcard-bar">
+        <button type="button" class="wildcard-btn" id="comodinButton">
+          <span class="wildcard-label" id="comodinLabel">⚡ Comodín Reestructurar</span>
+          <span class="wildcard-count" id="textoContador">x2</span>
+        </button>
+      </div>
+
+      <!-- Toast de feedback teórico en tiempo real -->
+      <div class="academic-toast" id="academicToastBanner" role="status" aria-live="polite"></div>
+
+      <!-- Overlay del Menú Principal, Selector de Niveles y Glosario Teórico -->
+      <section class="main-menu-overlay" id="mainMenuOverlay" aria-label="Menú Principal">
+        <!-- Subvista 1: Home -->
+        <div class="menu-subview" id="homeView">
+          <div class="academic-tag">TRABAJO FINAL INTEGRADOR • GESTIÓN DE LA ORGANIZACIÓN</div>
+
+          <div class="brand-hero">
+            <div class="brand-title-row">
+              <img src="assets/icon.png" alt="Icono OrgRise" class="brand-icon" />
+              <span class="game-title">OrgRise</span>
+            </div>
+            <p class="game-subtitle">
+              Simulador y Puzzle de Diseño de Estructuras Organizacionales
+              <span class="game-subtitle-tags">Cadena de Mando • Tramo de Control • Departamentalización • Centralización</span>
+            </p>
+          </div>
+
+          <div class="streak-badge-card" id="streakBadgeText">
+            🔥 Racha: <b>0 días</b> &nbsp;|&nbsp; Puzzle Diario: <span style="color:#80cbc4;font-weight:700;">Disponible hoy</span>
+          </div>
+
+          <div class="menu-buttons-stack">
+            <button type="button" class="big-menu-btn btn-campaign" id="btnPlayCampaign">
+              <span class="big-btn-title">▶ &nbsp;MODO CAMPAÑA ACADÉMICA</span>
+              <span class="big-btn-sub">Recorrido guiado por los 5 modelos de estructura organizacional</span>
+            </button>
+
+            <button type="button" class="big-menu-btn btn-selector" id="btnOpenLevelSelector">
+              <span class="big-btn-title">🗂️ &nbsp;SELECTOR DE NIVELES (5 CASOS)</span>
+              <span class="big-btn-sub">Elegí directamente qué concepto o estructura demostrar</span>
+            </button>
+
+            <button type="button" class="big-menu-btn btn-daily" id="btnDailyChallenge">
+              <span class="big-btn-title">📅 &nbsp;DESAFÍO DIARIO PROCEDURAL</span>
+              <span class="big-btn-sub">Generación algorítmica con semilla diaria y racha de victorias</span>
+            </button>
+
+            <button type="button" class="secondary-menu-btn" id="btnGlossary">
+              📚 Marco Teórico de Gestión de la Organización
+            </button>
+          </div>
+        </div>
+
+        <!-- Subvista 2: Selector de Niveles -->
+        <div class="menu-subview hidden" id="levelSelectorView">
+          <div class="subview-header">
+            <h2 class="subview-title">🗂️ Selector de Casos Organizacionales</h2>
+            <p class="subview-subtitle">Tocá cualquier nivel para cargarlo en el acto durante la presentación:</p>
+          </div>
+
+          <div class="levels-list">
+            <button type="button" class="big-menu-btn level-card-0" id="btnSelectLevel_1" data-level-index="0">
+              <span class="big-btn-title">Nivel 1: Cadena y Tramo de Control</span>
+              <span class="big-btn-sub">Fayol • Jerarquía Lineal-Funcional &nbsp;•&nbsp; 8 Roles</span>
+            </button>
+
+            <button type="button" class="big-menu-btn level-card-1" id="btnSelectLevel_2" data-level-index="1">
+              <span class="big-btn-title">Nivel 2: Departamentalización por Producto</span>
+              <span class="big-btn-sub">Estructura Divisional • Unidades de Negocio &nbsp;•&nbsp; 9 Roles</span>
+            </button>
+
+            <button type="button" class="big-menu-btn level-card-2" id="btnSelectLevel_3" data-level-index="2">
+              <span class="big-btn-title">Nivel 3: Departamentalización Geográfica</span>
+              <span class="big-btn-sub">Cobertura Territorial • Regiones Operativas &nbsp;•&nbsp; 10 Roles</span>
+            </button>
+
+            <button type="button" class="big-menu-btn level-card-3" id="btnSelectLevel_4" data-level-index="3">
+              <span class="big-btn-title">Nivel 4: Estructura Centralizada (Chata)</span>
+              <span class="big-btn-sub">Tramo Amplio • Supervisión Directa &nbsp;•&nbsp; 8 Roles</span>
+            </button>
+
+            <button type="button" class="big-menu-btn level-card-4" id="btnSelectLevel_5" data-level-index="4">
+              <span class="big-btn-title">Nivel 5: Estructura Descentralizada (Vertical)</span>
+              <span class="big-btn-sub">Tramo Estrecho • Delegación Táctica &nbsp;•&nbsp; 11 Roles</span>
+            </button>
+          </div>
+
+          <button type="button" class="back-menu-btn" id="btnBackFromSelector">⬅ Volver al Menú Principal</button>
+        </div>
+
+        <!-- Subvista 3: Glosario / Marco Teórico -->
+        <div class="menu-subview hidden" id="glossaryView">
+          <div class="subview-header">
+            <h2 class="subview-title">📚 Marco Teórico Aplicado en OrgRise</h2>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-item">
+              <strong>1. Cadena de Mando y Jerarquía:</strong><br />
+              Línea continua de autoridad que se extiende desde la cima estratégica (CEO) hasta el núcleo operativo (Analistas/Operadores), respetando el conducto regular.
+            </div>
+            <div class="glossary-item">
+              <strong>2. Unidad de Mando (Fayol):</strong><br />
+              Cada subordinado reporta a un único jefe directo para evitar conflictos de autoridad e instrucciones contradictorias.
+            </div>
+            <div class="glossary-item">
+              <strong>3. Tramo de Control (Span of Control):</strong><br />
+              Cantidad máxima de subordinados que un administrador puede supervisar con eficacia (indicado como <b>Tramo: X/Max</b> en cada nodo).
+            </div>
+            <div class="glossary-item">
+              <strong>4. Criterios de Departamentalización:</strong><br />
+              • <b>Funcional:</b> Agrupamiento por especialidad (Finanzas, Comercial, Operaciones, Tecnología).<br />
+              • <b>Por Producto:</b> Agrupamiento por línea de negocio o servicio (PyMEs, Consumo, Industria).<br />
+              • <b>Geográfica:</b> Agrupamiento por territorio o zona regional (Norte, Centro, Sur).
+            </div>
+            <div class="glossary-item">
+              <strong>5. Centralización vs. Descentralización:</strong><br />
+              Las estructuras <b>centralizadas (chatas)</b> concentran decisiones arriba con tramos amplios; las <b>descentralizadas (altas)</b> delegan autoridad táctica en mandos intermedios.
+            </div>
+          </div>
+
+          <button type="button" class="back-menu-btn" id="btnBackFromGlossary">⬅ Volver al Menú Principal</button>
+        </div>
+      </section>
+
+      <!-- Modal de Tutorial Paso a Paso y Pantalla de Victoria -->
+      <section class="tutorial-modal-overlay hidden" id="tutorialPanel" aria-modal="true" role="dialog">
+        <div class="modal-card">
+          <div class="modal-step-text" id="textoInstruccion"></div>
+          <div class="modal-actions">
+            <button type="button" class="modal-primary-btn" id="botonContinuar">Continuar</button>
+            <button type="button" class="modal-secondary-btn hidden" id="botonVolverAlMenuModal">☰ Selector de Niveles / Menú</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
